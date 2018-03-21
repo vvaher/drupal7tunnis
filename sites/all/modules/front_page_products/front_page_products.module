@@ -1,0 +1,93 @@
+<?php
+/**
+ * hook_block_info
+ * 
+ * hooki asemel enda mooduli nimi
+ */ 
+
+function front_page_products_block_info() { 
+
+  // This example comes from node.module.
+  $blocks['fpp_block'] = array(
+    'info' => t('Esilehele väljatoodud tooted'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+
+function front_page_products_block_view($delta = '') {
+
+  // This example is adapted from node.module.
+  $block = array();
+  switch ($delta) {
+    case 'fpp_block':
+      $block['subject'] = t('');
+      $block['content'] = front_page_products_get_products();
+      break;
+    
+  }
+  return $block;
+}
+function front_page_products_get_products(){
+    
+    $query = db_select('node','n'); //Valime andmebaasitabeli ja anname sellele aliase
+    $query -> condition('n.type','product','='); //Paneme paika sisutuubi
+    $query -> condition('n.status',1,'=');
+    $query -> fields('n'); //Utleme mis valjad peaks katte saama
+    $results = $query->execute(); //Jooksutame paringu ning kirjutame tulemuse muutujasse
+    $toode = ''; //Deklareerime tühja durpali muutuja kuhu kirjutame sisse tühja sõna
+    while($product = $results->fetchAssoc()){ //Kaime tulemused jarjest labi
+        // krumo($product); //Kuvame tulemuse valja DEBUGIMISE tooriist
+        $node = node_load($product['nid']); //Laeme node koos koikide valjadega endale sisse
+        $toode.='<div class="col-sm-4">';
+        $toode.= '<div class="thumbnail product-front">';
+        $image_url='';
+        if(!empty($node->uc_product_image)){        
+          $image = $node->uc_product_image['und'][0]; //Võtame pildi küljest pildi objekti
+          $image_url = image_style_url('medium',$image['uri']);
+        }
+        $toode.='<div class="product-name">';
+        $toode.= $node->title;
+        $toode .= '</div>';
+        if(!empty($node->field_tags)){
+          $tag = $node->field_tags['und'][0]['tid'];
+          $tag = taxonomy_term_load($tag);
+          $toode.='<div class="product-tag">';
+          $toode .= $tag->name;
+          $toode.='</div>';
+        }
+        $toode.='<div class="product-picture">';
+        if(!empty($image_url)){//Kontrollime, kas image_url on tyhi voi mitte
+        
+          $toode.= '<img src="'.$image_url.'"></img>';
+        }
+        
+        $toode .= '</div>';
+        if (!empty($node->body)) {//Kontrollime, kas toote kirjelduses on meil midagi sisestatud
+        
+          $toode.='<div class="product-description">';
+          $text = $node->body['und'][0]['value'];//Value kui ei ole vaja vormingut sailitada||und tahendab, et keelt pole defineeritud
+          $text = substr($text,0,160);
+          $toode.=$text;
+          
+        $toode .= '</div>';
+        }
+        
+          $toode.='<div class="product-price">';
+        $toode .= 'Toote hind:'.number_format($node->sell_price,2) . '$';
+        
+        $toode .= '</div>';
+        $toode.='<div class="read-more">';
+        $toode.= '<a class="btn btn-default" href="'.url('node/'.$node->nid).'">'.'Vaata lähemalt'.'</a>';
+        $toode.='</div>';
+        $toode.='</div>';
+        $toode.='</div>';
+        // krumo($node);
+    }
+    $output= '<div class="container">
+                <div class="row">
+                  '.$toode.'
+                </div>
+              </div>';
+    return $output;
+}

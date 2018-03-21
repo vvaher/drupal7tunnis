@@ -1,0 +1,58 @@
+.btn {
+    background-color:red;
+}
+.product-front{
+    min-height: 400px;
+    max-height: 400px;
+}
+.product-front .btn{
+    background-color: #337ab7;
+}
+.product-front .read-more{
+ text-align: center;
+ float: left;
+ clear:both;
+ width: 100%;
+ max-height: 35px;
+}
+.product-front .product-name, .product-price{
+    max-height: 25px;
+    min-height: 25px;
+    
+    font-weight: 900;
+    padding-left: 15px;
+    float: left;
+    clear: both;
+}
+.product-front .product-name{
+    width: 100%;
+    text-align: center;
+}
+.product-front .product-tag{
+    display: block;
+    position: absolute;
+    left: 65%;
+    top: 35px;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: rgba(255,255,255,1);
+}
+.product-front .product-description{
+    float: left;
+    clear: both;
+    padding-left: 15px;
+    padding-right: 15px;
+    min-height: 140px;
+    max-height: 140px;
+}
+.product-front .product-picture{
+    float: left;
+    clear: both;
+    height: 165px;
+    width: 100%;
+    text-align: center;
+}
+.product-front .product-picture img{
+    min-height: auto;
+    max-width: 100%;
+}
